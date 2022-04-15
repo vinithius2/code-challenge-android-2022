@@ -1,8 +1,22 @@
 package com.example.codechallengedrop.di
 
+import com.example.codechallengedrop.data.repository.BeerRepository
+import com.example.codechallengedrop.data.repository.BeerRepositoryData
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+
+val repositoryModule = module {
+    single { get<Retrofit>().create(BeerRepository::class.java) }
+}
+
+val repositoryDataModule = module {
+    single { BeerRepositoryData(get()) }
+}
+
+//val viewModelModule = module {
+//    viewModel { BeerViewModel(get()) }
+//}
 
 /******************** REMOTE ********************/
 

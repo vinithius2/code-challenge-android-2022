@@ -9,19 +9,21 @@ import org.koin.core.logger.Level
 
 class MyApplication: Application() {
 
+    private val appModules by lazy {
+        listOf(
+            repositoryModule,
+            repositoryDataModule,
+            remoteDataModule
+        )
+    }
+
     override fun onCreate() {
         super.onCreate()
-
         startKoin {
             androidLogger(if (BuildConfig.DEBUG) Level.ERROR else Level.NONE)
             androidContext(this@MyApplication)
-            modules(
-                listOf(
-                    remoteDataModule
-                )
-            )
+            modules(appModules)
         }
-
     }
 
 }
