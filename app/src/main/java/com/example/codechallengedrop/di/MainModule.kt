@@ -2,6 +2,8 @@ package com.example.codechallengedrop.di
 
 import com.example.codechallengedrop.data.repository.BeerRepository
 import com.example.codechallengedrop.data.repository.BeerRepositoryData
+import com.example.codechallengedrop.ui.BeerViewModel
+import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -14,9 +16,9 @@ val repositoryDataModule = module {
     single { BeerRepositoryData(get()) }
 }
 
-//val viewModelModule = module {
-//    viewModel { BeerViewModel(get()) }
-//}
+val viewModelModule = module {
+    viewModel { BeerViewModel(get()) }
+}
 
 /******************** REMOTE ********************/
 

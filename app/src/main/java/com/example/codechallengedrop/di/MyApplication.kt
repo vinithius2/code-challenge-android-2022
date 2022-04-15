@@ -13,6 +13,7 @@ class MyApplication: Application() {
         listOf(
             repositoryModule,
             repositoryDataModule,
+            viewModelModule,
             remoteDataModule
         )
     }
