@@ -29,11 +29,11 @@ class BeerViewModel(
     val beerDetailLoading: LiveData<Boolean>
         get() = _beerDetailLoading
 
-    private val _beerListError = MutableLiveData<Boolean>().apply { postValue(false)}
+    private val _beerListError = MutableLiveData<Boolean>().apply { postValue(false) }
     val beerListError: LiveData<Boolean>
         get() = _beerListError
 
-    private val _beerDetailError = MutableLiveData<Boolean>().apply { postValue(false)}
+    private val _beerDetailError = MutableLiveData<Boolean>().apply { postValue(false) }
     val beerDetailError: LiveData<Boolean>
         get() = _beerDetailError
 
@@ -41,7 +41,8 @@ class BeerViewModel(
         CoroutineScope(Dispatchers.IO).launch {
             _beerListLoading.postValue(true)
             try {
-                _beerList.postValue(beerRepositoryData.beerList())
+                val value = beerRepositoryData.beerList()
+                _beerList.postValue(value)
             } catch (e: Exception) {
                 _beerListError.postValue(true)
                 _beerListLoading.postValue(false)
@@ -55,7 +56,8 @@ class BeerViewModel(
             CoroutineScope(Dispatchers.IO).launch {
                 _beerDetailLoading.postValue(true)
                 try {
-                    _beerDetail.postValue(beerRepositoryData.beerDetail(id))
+                    val value = beerRepositoryData.beerDetail(id)
+                    _beerDetail.postValue(value)
                 } catch (e: Exception) {
                     _beerDetailError.postValue(true)
                     _beerDetailLoading.postValue(false)

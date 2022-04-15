@@ -1,32 +1,25 @@
 package com.example.codechallengedrop.ui
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.example.codechallengedrop.R
+import androidx.fragment.app.Fragment
+import com.example.codechallengedrop.databinding.FragmentBeerListBinding
+import org.koin.android.viewmodel.ext.android.viewModel
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [BeerListFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class BeerListFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+
+    private val viewModel: BeerViewModel by viewModel()
+    private lateinit var binding: FragmentBeerListBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+        observerBeerList()
+        with(viewModel) {
+            getBeerList()
         }
     }
 
@@ -34,27 +27,14 @@ class BeerListFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_beer_list, container, false)
+        binding = FragmentBeerListBinding.inflate(inflater)
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment BeerListFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            BeerListFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    private fun observerBeerList() {
+        viewModel.beerList.observe(this) {
+            Log.i("OK", "observerBeerList")
+        }
     }
+
 }
