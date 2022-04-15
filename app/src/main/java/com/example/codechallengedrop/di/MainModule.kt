@@ -20,8 +20,6 @@ val viewModelModule = module {
     viewModel { BeerViewModel(get()) }
 }
 
-/******************** REMOTE ********************/
-
 val remoteDataModule = module {
     single { retrofit() }
 }
