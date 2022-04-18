@@ -29,7 +29,8 @@ class BeerListAdapter(
 
         fun bind(beer: Beer) {
             binding.nameBeer.text = beer.name
-            binding.abvBeer.text = beer.abv.toString()
+            binding.abvBeer.text = "${beer.abv}%"
+            binding.colorAbvStatus.setData(beer.abv)
             Picasso.get().load(beer.image_url).into(binding.imageBeer)
         }
 
