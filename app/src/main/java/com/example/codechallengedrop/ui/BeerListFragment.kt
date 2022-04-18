@@ -5,7 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.codechallengedrop.R
 import com.example.codechallengedrop.databinding.FragmentBeerListBinding
 import org.koin.android.viewmodel.ext.android.viewModel
 
@@ -23,6 +26,12 @@ class BeerListFragment : Fragment() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        (activity as MainActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        (activity as MainActivity).supportActionBar?.title = getString(R.string.app_name)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -33,6 +42,9 @@ class BeerListFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
+        // TODO: To analyze
+        observerLoading()
+        observerError()
         observerBeerList()
     }
 
@@ -41,9 +53,38 @@ class BeerListFragment : Fragment() {
         layoutManager.orientation = LinearLayoutManager.VERTICAL
         binding.recyclerViewBeerList.layoutManager = layoutManager
         viewModel.beerList.observe(this) { beers ->
+            binding.recyclerViewBeerList.visibility = View.VISIBLE
             beerListAdapter = BeerListAdapter(beers)
-            binding.recyclerViewBeerList.adapter = beerListAdapter
+            binding.recyclerViewBeerList.adapter = beerListAdapter.apply {
+                onCallBackClickDetail = { id ->
+                    val bundle = Bundle()
+                    bundle.putInt("id_beer", id)
+                    findNavController().navigate(
+                        R.id.action_beerListFragment_to_beerDetailFragment,
+                        bundle
+                    )
+                }
+            }
         }
     }
 
+    private fun observerLoading() {
+        viewModel.beerListLoading.observe(this) { loading ->
+            if (loading) {
+                binding.progressBar.visibility = View.VISIBLE
+            } else {
+                binding.progressBar.visibility = View.GONE
+            }
+        }
+    }
+
+    private fun observerError() {
+        viewModel.beerListError.observe(this) { error ->
+            if (error) {
+                binding.imageError.visibility = View.VISIBLE
+            } else {
+                binding.imageError.visibility = View.GONE
+            }
+        }
+    }
 }

@@ -12,6 +12,8 @@ class BeerListAdapter(
     private val dataSet: List<Beer>
 ) : RecyclerView.Adapter<BeerListAdapter.BeerListViewHolder>() {
 
+    var onCallBackClickDetail: ((id: Int) -> Unit)? = null
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BeerListViewHolder {
         val binding = BeerViewholderBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return BeerListViewHolder(binding)
@@ -23,19 +25,18 @@ class BeerListAdapter(
 
     override fun getItemCount() = dataSet.size
 
-    class BeerListViewHolder(
+    inner class BeerListViewHolder(
         private val binding: BeerViewholderBinding
-    ) : RecyclerView.ViewHolder(binding.root), View.OnClickListener {
+    ) : RecyclerView.ViewHolder(binding.root){
 
         fun bind(beer: Beer) {
             binding.nameBeer.text = beer.name
             binding.abvBeer.text = "${beer.abv}%"
             binding.colorAbvStatus.setData(beer.abv)
             Picasso.get().load(beer.image_url).into(binding.imageBeer)
-        }
-
-        override fun onClick(v: View?) {
-            TODO("Not yet implemented")
+            binding.cardViewHolder.setOnClickListener {
+                onCallBackClickDetail?.invoke(beer.id)
+            }
         }
 
     }

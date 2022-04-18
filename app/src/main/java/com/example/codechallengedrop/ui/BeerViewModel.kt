@@ -1,5 +1,6 @@
 package com.example.codechallengedrop.ui
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -53,17 +54,16 @@ class BeerViewModel(
 
     fun getBeerDetail(id: Int) {
         CoroutineScope(Dispatchers.IO).launch {
-            CoroutineScope(Dispatchers.IO).launch {
-                _beerDetailLoading.postValue(true)
-                try {
-                    val value = beerRepositoryData.beerDetail(id)
-                    _beerDetail.postValue(value)
-                } catch (e: Exception) {
-                    _beerDetailError.postValue(true)
-                    _beerDetailLoading.postValue(false)
-                }
+            _beerDetailLoading.postValue(true)
+            try {
+                val value = beerRepositoryData.beerDetail(id)
+                _beerDetail.postValue(value.last())
+            } catch (e: Exception) {
+                Log.e("getBeerDetail", e.toString())
+                _beerDetailError.postValue(true)
                 _beerDetailLoading.postValue(false)
             }
+            _beerDetailLoading.postValue(false)
         }
     }
 

@@ -12,6 +12,6 @@ interface BeerRepository {
     suspend fun getBeerList(@Query("page") number: Int): List<Beer>
 
     @GET("beers/{id}")
-    suspend fun getBeerDetail(@Path("id") id: Int): Beer
+    suspend fun getBeerDetail(@Path("id") id: Int): List<Beer>
 
 }

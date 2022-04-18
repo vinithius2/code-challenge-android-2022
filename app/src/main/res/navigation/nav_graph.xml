@@ -14,7 +14,12 @@
             android:id="@+id/action_beerListFragment_to_beerDetailFragment"
             app:destination="@id/beerDetailFragment"
             app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim"/>
+            app:exitAnim="@anim/nav_default_exit_anim" />
+
+        <action
+            android:id="@+id/action_subFragment_pop_2"
+            app:popUpTo="@id/beerDetailFragment"
+            app:popUpToInclusive="false" />
 
         <argument
             android:name="idBeer"
@@ -26,6 +31,8 @@
     <fragment
         android:id="@+id/beerDetailFragment"
         android:name="com.example.codechallengedrop.ui.BeerDetailFragment"
-        tools:layout="@layout/fragment_beer_detail" />
+        tools:layout="@layout/fragment_beer_detail">
+
+    </fragment>
 
 </navigation>

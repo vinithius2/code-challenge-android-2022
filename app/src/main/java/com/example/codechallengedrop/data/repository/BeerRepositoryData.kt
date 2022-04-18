@@ -10,7 +10,7 @@ class BeerRepositoryData(
         return repository.getBeerList(number)
     }
 
-    suspend fun beerDetail(id: Int): Beer {
+    suspend fun beerDetail(id: Int): List<Beer> {
         return repository.getBeerDetail(id)
     }
 
