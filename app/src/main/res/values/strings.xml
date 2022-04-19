@@ -3,4 +3,8 @@
     <string name="abv">ABV: </string>
     <string name="error">Error</string>
     <string name="lorem_ipsum">"  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur sagittis sapien ante, a varius est efficitur ac. Phasellus malesuada rhoncus leo, mollis tincidunt massa porttitor ut. In at tellus porta justo lacinia sodales. Pellentesque feugiat dolor mi, sed congue eros tempor malesuada. Integer accumsan in ipsum sed ullamcorper. Etiam cursus tortor vel augue ultricies pharetra. Curabitur vitae tristique ipsum, eget aliquet nunc. Cras condimentum purus in dignissim maximus. Suspendisse tempus commodo magna id suscipit. Curabitur auctor turpis nec nulla molestie finibus."</string>
+    <string name="balance">Balance</string>
+    <string name="hops">Hops</string>
+    <string name="malts">Malts</string>
+    <string name="methods">Methods</string>
 </resources>

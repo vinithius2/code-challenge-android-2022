@@ -6,10 +6,10 @@ import android.graphics.drawable.GradientDrawable
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
-import com.example.codechallengedrop.databinding.ColorAbvStatusBallBinding
+import com.example.codechallengedrop.databinding.ColorAbvStatusBallComponentBinding
 
 
-class ColorAbvStatusBall(context: Context, attrs: AttributeSet?) :
+class ColorAbvStatusBallComponent(context: Context, attrs: AttributeSet?) :
     ConstraintLayout(context, attrs) {
 
     private var ABV: Double = 0.0
@@ -19,7 +19,7 @@ class ColorAbvStatusBall(context: Context, attrs: AttributeSet?) :
         }
 
     private val binding =
-        ColorAbvStatusBallBinding.inflate(LayoutInflater.from(context), this, true)
+        ColorAbvStatusBallComponentBinding.inflate(LayoutInflater.from(context), this, true)
 
     /**
      * Level ABV with colors

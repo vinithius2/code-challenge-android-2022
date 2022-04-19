@@ -6,9 +6,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.codechallengedrop.data.response.Hops
+import com.example.codechallengedrop.data.response.Malt
+import com.example.codechallengedrop.data.response.Method
 import com.example.codechallengedrop.databinding.FragmentBeerDetailBinding
 import com.squareup.picasso.Picasso
-import org.koin.android.ext.android.bind
 import org.koin.android.viewmodel.ext.android.viewModel
 
 
@@ -16,6 +19,9 @@ class BeerDetailFragment : Fragment() {
 
     private val viewModel: BeerViewModel by viewModel()
     private lateinit var binding: FragmentBeerDetailBinding
+    private lateinit var hopsAdapter: HopsAdapter
+    private lateinit var maltsAdapter: MaltsAdapter
+    private lateinit var methodsAdapter: MethodsAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,12 +48,55 @@ class BeerDetailFragment : Fragment() {
 
     private fun observerBeerDetail() {
         viewModel.beerDetail.observe(this) { beer ->
-            binding.cardViewHolder.visibility = View.VISIBLE
+            visibileCards()
             (activity as MainActivity).supportActionBar?.title = beer.name
             binding.abvBeer.text = "${beer.abv}%"
             binding.colorAbvStatus.setData(beer.abv)
             binding.descriptionBeer.text = beer.description
             Picasso.get().load(beer.image_url).into(binding.imageBeer)
+            adapterHops(beer.ingredients.hops)
+            adapterMalts(beer.ingredients.malt)
+            adapterMethods(beer.method)
+        }
+    }
+
+    private fun visibileCards() {
+        binding.scrollDetailBeer.visibility = View.VISIBLE
+    }
+
+    private fun adapterHops(hops: List<Hops>) {
+        val layoutManager = LinearLayoutManager(activity)
+        layoutManager.orientation = LinearLayoutManager.VERTICAL
+        binding.recyclerViewHops.layoutManager = layoutManager
+        hopsAdapter = HopsAdapter(hops)
+        binding.recyclerViewHops.adapter = hopsAdapter.apply {
+            onCallBackClickBalance = {
+                // TODO: Balance Screen
+            }
+        }
+    }
+
+    private fun adapterMalts(malts: List<Malt>) {
+        val layoutManager = LinearLayoutManager(activity)
+        layoutManager.orientation = LinearLayoutManager.VERTICAL
+        binding.recyclerViewMalts.layoutManager = layoutManager
+        maltsAdapter = MaltsAdapter(malts)
+        binding.recyclerViewMalts.adapter = maltsAdapter.apply {
+            onCallBackClickBalance = {
+                // TODO: Balance Screen
+            }
+        }
+    }
+
+    private fun adapterMethods(methods: Method) {
+        val layoutManager = LinearLayoutManager(activity)
+        layoutManager.orientation = LinearLayoutManager.VERTICAL
+        binding.recyclerViewMethod.layoutManager = layoutManager
+        methodsAdapter = MethodsAdapter(methods.getNewFormat())
+        binding.recyclerViewMethod.adapter = methodsAdapter.apply {
+            onCallBackClickBalance = {
+                // TODO: Balance Screen
+            }
         }
     }
 

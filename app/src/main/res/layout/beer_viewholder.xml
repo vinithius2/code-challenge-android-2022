@@ -38,7 +38,7 @@
                 app:layout_constraintTop_toTopOf="@+id/image_beer"
                 tools:text="Beer" />
 
-            <com.example.codechallengedrop.ui.components.ColorAbvStatusBall
+            <com.example.codechallengedrop.ui.components.ColorAbvStatusBallComponent
                 android:id="@+id/color_abv_status"
                 android:layout_width="10dp"
                 android:layout_height="10dp"
