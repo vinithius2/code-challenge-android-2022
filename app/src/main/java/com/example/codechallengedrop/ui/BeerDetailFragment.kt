@@ -6,7 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.codechallengedrop.R
 import com.example.codechallengedrop.data.response.Hops
 import com.example.codechallengedrop.data.response.Malt
 import com.example.codechallengedrop.data.response.Method
@@ -70,8 +72,8 @@ class BeerDetailFragment : Fragment() {
         binding.recyclerViewHops.layoutManager = layoutManager
         hopsAdapter = HopsAdapter(hops)
         binding.recyclerViewHops.adapter = hopsAdapter.apply {
-            onCallBackClickBalance = {
-                // TODO: Balance Screen
+            onCallBackClickBalance = { value, unit ->
+                navigationBalance(value, unit)
             }
         }
     }
@@ -82,8 +84,8 @@ class BeerDetailFragment : Fragment() {
         binding.recyclerViewMalts.layoutManager = layoutManager
         maltsAdapter = MaltsAdapter(malts)
         binding.recyclerViewMalts.adapter = maltsAdapter.apply {
-            onCallBackClickBalance = {
-                // TODO: Balance Screen
+            onCallBackClickBalance = { value, unit ->
+                navigationBalance(value, unit)
             }
         }
     }
@@ -94,8 +96,8 @@ class BeerDetailFragment : Fragment() {
         binding.recyclerViewMethod.layoutManager = layoutManager
         methodsAdapter = MethodsAdapter(methods.getNewFormat())
         binding.recyclerViewMethod.adapter = methodsAdapter.apply {
-            onCallBackClickBalance = {
-                // TODO: Balance Screen
+            onCallBackClickBalance = { value, unit ->
+                navigationBalance(value, unit)
             }
         }
     }
@@ -118,5 +120,15 @@ class BeerDetailFragment : Fragment() {
                 binding.imageError.visibility = View.GONE
             }
         }
+    }
+
+    private fun navigationBalance(value: Double, unit: String) {
+        val bundle = Bundle()
+        bundle.putDouble("value", value)
+        bundle.putString("unit", unit)
+        findNavController().navigate(
+            R.id.action_beerDetailFragment_to_balanceFragment,
+            bundle
+        )
     }
 }

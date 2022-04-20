@@ -5,19 +5,28 @@ data class Method(
     val fermentation: Fermentation,
     val twist: String? = null
 ) {
-    fun getNewFormat(): MutableList<String> {
-        val new_mash_temp = this.mash_temp.map { map ->
-            "Mash Temp: ${map.temp.unit} ${map.temp.value}" +
-                    if (map.duration != null) {
-                        "\nDuration: ${map.duration}"
-                    } else {
-                        ""
-                    }
+    fun getNewFormat(): MutableList<Pair<String, DefaultValueUnit>> {
+        val newMashTemp = this.mash_temp.map { map ->
+            Pair(getFormatMashTemp(map), map.temp)
         }.toMutableList()
-        new_mash_temp.add("Fermentation: ${this.fermentation.temp.value} ${this.fermentation.temp.unit}")
+        newMashTemp.add(
+            Pair(
+                "Fermentation: ${this.fermentation.temp.value} ${this.fermentation.temp.unit}",
+                this.fermentation.temp
+            )
+        )
         this.twist?.let {
-            new_mash_temp.add("Twist: ${this.twist}")
+            newMashTemp.add(Pair("Twist: $it", DefaultValueUnit()))
         }
-        return new_mash_temp
+        return newMashTemp
+    }
+
+    private fun getFormatMashTemp(mash_temp: MashTemp): String {
+        return "Mash Temp: ${mash_temp.temp.unit} ${mash_temp.temp.value}" +
+                if (mash_temp.duration != null) {
+                    "\nDuration: ${mash_temp.duration}"
+                } else {
+                    ""
+                }
     }
 }

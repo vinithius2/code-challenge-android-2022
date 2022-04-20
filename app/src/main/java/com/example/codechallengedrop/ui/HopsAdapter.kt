@@ -10,7 +10,7 @@ class HopsAdapter(
     private val dataSet: List<Hops>
 ) : RecyclerView.Adapter<HopsAdapter.HopsViewHolder>() {
 
-    var onCallBackClickBalance: (() -> Unit)? = null
+    var onCallBackClickBalance: ((value: Double, unit: String) -> Unit)? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HopsViewHolder {
         val binding =
@@ -31,7 +31,7 @@ class HopsAdapter(
         fun bind(hops: Hops) {
             binding.ingredient.text = "${hops.name} (${hops.amount.value} ${hops.amount.unit})"
             binding.buttonBalance.setOnClickListener {
-                onCallBackClickBalance?.invoke()
+                onCallBackClickBalance?.invoke(hops.amount.value, hops.amount.unit)
             }
         }
     }

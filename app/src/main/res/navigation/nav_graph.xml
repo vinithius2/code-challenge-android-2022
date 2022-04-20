@@ -33,6 +33,24 @@
         android:name="com.example.codechallengedrop.ui.BeerDetailFragment"
         tools:layout="@layout/fragment_beer_detail">
 
+        <action
+            android:id="@+id/action_beerDetailFragment_to_balanceFragment"
+            app:destination="@id/balanceFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim" />
+
+        <argument
+            android:name="valueBalance"
+            android:defaultValue="0"
+            app:argType="float" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/balanceFragment"
+        android:name="com.example.codechallengedrop.ui.BalanceFragment"
+        tools:layout="@layout/fragment_balance">
+
     </fragment>
 
 </navigation>

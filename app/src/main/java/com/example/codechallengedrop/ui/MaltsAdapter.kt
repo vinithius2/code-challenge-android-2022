@@ -10,7 +10,7 @@ class MaltsAdapter(
     private val dataSet: List<Malt>
 ) : RecyclerView.Adapter<MaltsAdapter.MaltsViewHolder>() {
 
-    var onCallBackClickBalance: (() -> Unit)? = null
+    var onCallBackClickBalance: ((value: Double, unit: String) -> Unit)? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MaltsViewHolder {
         val binding =
@@ -31,7 +31,7 @@ class MaltsAdapter(
         fun bind(malt: Malt) {
             binding.ingredient.text = "${malt.name} (${malt.amount.value} ${malt.amount.unit})"
             binding.buttonBalance.setOnClickListener {
-                onCallBackClickBalance?.invoke()
+                onCallBackClickBalance?.invoke(malt.amount.value, malt.amount.unit)
             }
         }
     }
