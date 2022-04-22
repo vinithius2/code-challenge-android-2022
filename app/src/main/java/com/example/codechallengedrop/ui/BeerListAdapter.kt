@@ -1,7 +1,6 @@
 package com.example.codechallengedrop.ui
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.codechallengedrop.data.response.Beer
@@ -15,7 +14,8 @@ class BeerListAdapter(
     var onCallBackClickDetail: ((id: Int) -> Unit)? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BeerListViewHolder {
-        val binding = BeerViewholderBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding =
+            BeerViewholderBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return BeerListViewHolder(binding)
     }
 
@@ -27,7 +27,7 @@ class BeerListAdapter(
 
     inner class BeerListViewHolder(
         private val binding: BeerViewholderBinding
-    ) : RecyclerView.ViewHolder(binding.root){
+    ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(beer: Beer) {
             binding.nameBeer.text = beer.name

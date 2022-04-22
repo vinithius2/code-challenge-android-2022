@@ -3,7 +3,6 @@ package com.example.codechallengedrop.ui
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.Navigation
-import androidx.navigation.ui.NavigationUI
 import com.example.codechallengedrop.R
 
 class MainActivity : AppCompatActivity() {

@@ -37,12 +37,14 @@ class BeerListFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentBeerListBinding.inflate(inflater)
+        binding.buttonNetworkAgain.setOnClickListener {
+            viewModel.getBeerList()
+        }
         return binding.root
     }
 
-    override fun onStart() {
-        super.onStart()
-        // TODO: To analyze
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         observerLoading()
         observerError()
         observerBeerList()
@@ -72,6 +74,8 @@ class BeerListFragment : Fragment() {
         viewModel.beerListLoading.observe(this) { loading ->
             if (loading) {
                 binding.progressBar.visibility = View.VISIBLE
+                binding.imageError.visibility = View.GONE
+                binding.buttonNetworkAgain.visibility = View.GONE
             } else {
                 binding.progressBar.visibility = View.GONE
             }
@@ -82,8 +86,10 @@ class BeerListFragment : Fragment() {
         viewModel.beerListError.observe(this) { error ->
             if (error) {
                 binding.imageError.visibility = View.VISIBLE
+                binding.buttonNetworkAgain.visibility = View.VISIBLE
             } else {
                 binding.imageError.visibility = View.GONE
+                binding.buttonNetworkAgain.visibility = View.GONE
             }
         }
     }

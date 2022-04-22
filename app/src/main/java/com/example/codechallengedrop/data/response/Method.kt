@@ -3,7 +3,8 @@ package com.example.codechallengedrop.data.response
 data class Method(
     val mash_temp: List<MashTemp>,
     val fermentation: Fermentation,
-    val twist: String? = null
+    val twist: String? = null,
+    val status: Boolean = false
 ) {
     fun getNewFormat(): MutableList<Pair<String, DefaultValueUnit>> {
         val newMashTemp = this.mash_temp.map { map ->

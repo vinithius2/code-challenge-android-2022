@@ -21,10 +21,13 @@ class ProgressComponent(
 
     private val ovalSpace = RectF()
     private val parentArcColor = Color.WHITE
-    private val fillArcColor = Color.BLUE
-    private val ballColor = Color.GREEN
+    private val fillArcColor = Color.MAGENTA
+    private val finishArcColor = Color.GREEN
     private var currentPercentage = 0
+    private var timeBalance: List<Pair<Int, Int>> = listOf()
+    private var canvasAux: Canvas? = null
     var onCallBackValue: ((value: Int) -> Unit)? = null
+    var onCallBackFinish: (() -> Unit)? = null
 
     private val parentArcPaint = Paint().apply {
         style = Paint.Style.STROKE
@@ -42,24 +45,27 @@ class ProgressComponent(
         strokeCap = Paint.Cap.ROUND
     }
 
-    private val ballPaint = Paint().apply {
-        isAntiAlias = false
-        color = ballColor
-        strokeWidth = 30f
+    private val finishPaintPoint = Paint().apply {
+        style = Paint.Style.STROKE
+        isAntiAlias = true
+        color = parentArcColor
+        strokeWidth = 40f
+        strokeCap = Paint.Cap.SQUARE
     }
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
         setSpace()
-        canvas?.let {
+        canvasAux = canvas
+        canvasAux?.let {
             drawBackgroundArc(it)
+            drawBall(it)
             drawInnerArc(it)
-//            drawBall(it)
         }
     }
 
-    private fun drawBackgroundArc(it: Canvas) {
-        it.drawArc(ovalSpace, START, END, false, parentArcPaint)
+    private fun drawBackgroundArc(canvas: Canvas) {
+        canvas.drawArc(ovalSpace, START, END, false, parentArcPaint)
     }
 
     private fun drawInnerArc(canvas: Canvas) {
@@ -68,11 +74,15 @@ class ProgressComponent(
     }
 
     private fun drawBall(canvas: Canvas) {
-        canvas.drawOval(ovalSpace, ballPaint)
+        val value = getFinishPercentageToFill(timeBalance.last().second)
+        canvas.drawArc(ovalSpace, value + START, 1f, false, finishPaintPoint)
     }
 
     private fun getCurrentPercentageToFill() =
-        (ARC_FULL_ROTATION_DEGREE * (currentPercentage / PERCENTAGE_DIVIDER)).toFloat() // Necessário avaliar
+        (ARC_FULL_ROTATION_DEGREE * (currentPercentage / PERCENTAGE_DIVIDER)).toFloat()
+
+    private fun getFinishPercentageToFill(value: Int) =
+        ((value * PERCENTAGE_DIVIDER) / ARC_FULL_ROTATION_DEGREE).toFloat()
 
     private fun setSpace() {
         val horizontalCenter = (width.div(2)).toFloat()
@@ -86,7 +96,11 @@ class ProgressComponent(
         )
     }
 
-    fun animateProgress(timeBalance: List<Pair<Int, Int>>, index: Int = 0, lastValue: Float = 0f) {
+    fun animateProgress(index: Int = 0, lastValue: Float = 0f) {
+        if (index == 0) {
+            fillArcPaint.color = fillArcColor
+            canvasAux?.let { drawInnerArc(it) }
+        }
         val valuesHolder = PropertyValuesHolder.ofFloat(
             PERCENTAGE_VALUE_HOLDER,
             lastValue,
@@ -105,18 +119,26 @@ class ProgressComponent(
             }
             doOnEnd {
                 if (timeBalance.lastIndex != index) {
-                    animateProgress(timeBalance, index.plus(1), newLastValue)
+                    animateProgress(index.plus(1), newLastValue)
+                } else {
+                    fillArcPaint.color = finishArcColor
+                    canvasAux?.let { drawInnerArc(it) }
+                    onCallBackFinish?.invoke()
                 }
             }
         }
         animator.start()
     }
 
+    fun saveDataStream(dataStream: List<Pair<Int, Int>>) {
+        timeBalance = dataStream
+    }
+
     companion object {
         const val START: Float = 130f
         const val END: Float = 280f
         const val PERCENTAGE_VALUE_HOLDER = "percentage"
-        const val ARC_FULL_ROTATION_DEGREE = 280 // Necessário avaliar
-        const val PERCENTAGE_DIVIDER = 100.0 // Necessário avaliar
+        const val ARC_FULL_ROTATION_DEGREE = 280
+        const val PERCENTAGE_DIVIDER = 100.0
     }
 }

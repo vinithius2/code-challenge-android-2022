@@ -22,10 +22,6 @@ class BeerViewModel(
     val beerDetail: LiveData<Beer>
         get() = _beerDetail
 
-//    private val _simulationDataStreamBalance = MutableLiveData<List<Pair<Int, Int>>>()
-//    val simulationDataStreamBalance: LiveData<List<Pair<Int, Int>>>
-//        get() = _simulationDataStreamBalance
-
     private val _beerListLoading = MutableLiveData<Boolean>()
     val beerListLoading: LiveData<Boolean>
         get() = _beerListLoading
@@ -49,6 +45,7 @@ class BeerViewModel(
                 val value = beerRepositoryData.beerList()
                 _beerList.postValue(value)
             } catch (e: Exception) {
+                Log.e("error", e.toString())
                 _beerListError.postValue(true)
                 _beerListLoading.postValue(false)
             }
@@ -71,23 +68,6 @@ class BeerViewModel(
         }
     }
 
-//    /**
-//     * This function only simulates a data stream to test the balance screen.
-//     */
-//    fun simulationDataStream(lastValue : Int) : MutableList<Pair<Int, Int>> {
-//        val time = mutableListOf<Pair<Int, Int>>()
-//        val changes = (0..BalanceFragment.COUNT_MAX).random()
-//        for (i in 0..changes) {
-//            if (i != changes) {
-//                val weight = (0..BalanceFragment.WEIGHT_MAX).random()
-//                val timestamp = (0..weight).random()
-//                time.add(Pair(timestamp, weight))
-//            } else {
-//                val timestamp = (0..lastValue).random()
-//                time.add(Pair(timestamp, lastValue))
-//            }
-//        }
-//        return time
-//    }
+    // TODO: Make data stream in MVVM, for the time being is Fragment
 
 }
