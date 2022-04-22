@@ -10,6 +10,9 @@ import android.graphics.RectF
 import android.util.AttributeSet
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
+import androidx.core.animation.doOnEnd
+import com.example.codechallengedrop.extension.percentToValue
+import com.example.codechallengedrop.extension.valueToPercente
 
 class ProgressComponent(
     context: Context?,
@@ -21,6 +24,7 @@ class ProgressComponent(
     private val fillArcColor = Color.BLUE
     private val ballColor = Color.GREEN
     private var currentPercentage = 0
+    var onCallBackValue: ((value: Int) -> Unit)? = null
 
     private val parentArcPaint = Paint().apply {
         style = Paint.Style.STROKE
@@ -29,6 +33,7 @@ class ProgressComponent(
         strokeWidth = 20f
         strokeCap = Paint.Cap.ROUND
     }
+
     private val fillArcPaint = Paint().apply {
         style = Paint.Style.STROKE
         isAntiAlias = true
@@ -38,11 +43,9 @@ class ProgressComponent(
     }
 
     private val ballPaint = Paint().apply {
-        style = Paint.Style.STROKE
         isAntiAlias = false
         color = ballColor
         strokeWidth = 30f
-        strokeCap = Paint.Cap.ROUND
     }
 
     override fun onDraw(canvas: Canvas?) {
@@ -65,7 +68,7 @@ class ProgressComponent(
     }
 
     private fun drawBall(canvas: Canvas) {
-        canvas.drawArc(ovalSpace, START + 200f, START + 200f + 2f, false, ballPaint)
+        canvas.drawOval(ovalSpace, ballPaint)
     }
 
     private fun getCurrentPercentageToFill() =
@@ -83,24 +86,29 @@ class ProgressComponent(
         )
     }
 
-    fun animateProgress() {
+    fun animateProgress(timeBalance: List<Pair<Int, Int>>, index: Int = 0, lastValue: Float = 0f) {
         val valuesHolder = PropertyValuesHolder.ofFloat(
             PERCENTAGE_VALUE_HOLDER,
-            0f,
-            100f
+            lastValue,
+            timeBalance[index].second.valueToPercente()
         )
-
+        val newLastValue = timeBalance[index].second.valueToPercente()
         val animator = ValueAnimator().apply {
             setValues(valuesHolder)
-            duration = 1000
+            duration = timeBalance[index].first.toLong()
             interpolator = AccelerateDecelerateInterpolator()
             addUpdateListener {
                 val percentage = it.getAnimatedValue(PERCENTAGE_VALUE_HOLDER) as Float
                 currentPercentage = percentage.toInt()
+                onCallBackValue?.invoke(percentage.percentToValue())
                 invalidate()
             }
+            doOnEnd {
+                if (timeBalance.lastIndex != index) {
+                    animateProgress(timeBalance, index.plus(1), newLastValue)
+                }
+            }
         }
-
         animator.start()
     }
 
