@@ -1,6 +1,7 @@
 package com.example.codechallengedrop.data.repository
 
 import com.example.codechallengedrop.data.response.Beer
+import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -8,9 +9,9 @@ import retrofit2.http.Query
 interface BeerRepository {
 
     @GET("beers/")
-    suspend fun getBeerList(@Query("page") number: Int): List<Beer>
+    suspend fun getBeerList(@Query("page") number: Int): Response<List<Beer>>
 
     @GET("beers/{id}")
-    suspend fun getBeerDetail(@Path("id") id: Int): List<Beer>
+    suspend fun getBeerDetail(@Path("id") id: Int): Response<List<Beer>>
 
 }

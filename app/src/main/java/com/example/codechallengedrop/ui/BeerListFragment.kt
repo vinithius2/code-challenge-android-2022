@@ -47,6 +47,7 @@ class BeerListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         observerLoading()
         observerError()
+        observerTitleError()
         observerBeerList()
     }
 
@@ -54,7 +55,7 @@ class BeerListFragment : Fragment() {
         val layoutManager = LinearLayoutManager(activity)
         layoutManager.orientation = LinearLayoutManager.VERTICAL
         binding.recyclerViewBeerList.layoutManager = layoutManager
-        viewModel.beerList.observe(this) { beers ->
+        viewModel.beerList.observe(viewLifecycleOwner) { beers ->
             binding.recyclerViewBeerList.visibility = View.VISIBLE
             beerListAdapter = BeerListAdapter(beers)
             binding.recyclerViewBeerList.adapter = beerListAdapter.apply {
@@ -71,10 +72,11 @@ class BeerListFragment : Fragment() {
     }
 
     private fun observerLoading() {
-        viewModel.beerListLoading.observe(this) { loading ->
+        viewModel.beerListLoading.observe(viewLifecycleOwner) { loading ->
             if (loading) {
                 binding.progressBar.visibility = View.VISIBLE
                 binding.imageError.visibility = View.GONE
+                binding.titleError.visibility = View.GONE
                 binding.buttonNetworkAgain.visibility = View.GONE
             } else {
                 binding.progressBar.visibility = View.GONE
@@ -83,14 +85,22 @@ class BeerListFragment : Fragment() {
     }
 
     private fun observerError() {
-        viewModel.beerListError.observe(this) { error ->
+        viewModel.beerListError.observe(viewLifecycleOwner) { error ->
             if (error) {
                 binding.imageError.visibility = View.VISIBLE
+                binding.titleError.visibility = View.VISIBLE
                 binding.buttonNetworkAgain.visibility = View.VISIBLE
             } else {
                 binding.imageError.visibility = View.GONE
+                binding.titleError.visibility = View.GONE
                 binding.buttonNetworkAgain.visibility = View.GONE
             }
+        }
+    }
+
+    private fun observerTitleError() {
+        viewModel.beerStringError.observe(viewLifecycleOwner) {
+            binding.titleError.text = getText(it)
         }
     }
 }

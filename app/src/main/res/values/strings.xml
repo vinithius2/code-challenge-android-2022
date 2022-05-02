@@ -2,6 +2,7 @@
     <string name="app_name">Code Challenge Drop</string>
     <string name="abv">ABV: </string>
     <string name="error">Error</string>
+    <string name="unknown_error">Unknown error</string>
     <string name="lorem_ipsum">"  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur sagittis sapien ante, a varius est efficitur ac. Phasellus malesuada rhoncus leo, mollis tincidunt massa porttitor ut. In at tellus porta justo lacinia sodales. Pellentesque feugiat dolor mi, sed congue eros tempor malesuada. Integer accumsan in ipsum sed ullamcorper. Etiam cursus tortor vel augue ultricies pharetra. Curabitur vitae tristique ipsum, eget aliquet nunc. Cras condimentum purus in dignissim maximus. Suspendisse tempus commodo magna id suscipit. Curabitur auctor turpis nec nulla molestie finibus."</string>
     <string name="balance">Balance</string>
     <string name="hops">Hops</string>
@@ -11,4 +12,9 @@
     <string name="done">Done?</string>
     <string name="start">Start</string>
     <string name="weighing">Weighing</string>
+    <!-- Request messages -->
+    <string name="UNAUTHORIZED_FORBIDDEN">You do not have permission for this request.</string>
+    <string name="NOT_FOUND">We didn\'t find what you\'re looking for.</string>
+    <string name="TIMEOUT">Please check your connection or try later.</string>
+    <string name="INTERNAL_SERVER_ERROR">Oops, we have a problem with the server…</string>
 </resources>

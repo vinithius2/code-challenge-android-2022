@@ -54,6 +54,7 @@ class BeerDetailFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         observerLoading()
         observerError()
+        observerTitleError()
         observerBeerDetail()
     }
 
@@ -128,6 +129,7 @@ class BeerDetailFragment : Fragment() {
             if (loading) {
                 binding.progressBar.visibility = View.VISIBLE
                 binding.imageError.visibility = View.GONE
+                binding.titleError.visibility = View.GONE
                 binding.buttonNetworkAgain.visibility = View.GONE
             } else {
                 binding.progressBar.visibility = View.GONE
@@ -139,11 +141,19 @@ class BeerDetailFragment : Fragment() {
         viewModel.beerDetailError.observe(viewLifecycleOwner) { error ->
             if (error) {
                 binding.imageError.visibility = View.VISIBLE
+                binding.titleError.visibility = View.VISIBLE
                 binding.buttonNetworkAgain.visibility = View.VISIBLE
             } else {
                 binding.imageError.visibility = View.GONE
+                binding.titleError.visibility = View.GONE
                 binding.buttonNetworkAgain.visibility = View.GONE
             }
+        }
+    }
+
+    private fun observerTitleError() {
+        viewModel.beerStringError.observe(this) {
+            binding.titleError.text = getText(it)
         }
     }
 
