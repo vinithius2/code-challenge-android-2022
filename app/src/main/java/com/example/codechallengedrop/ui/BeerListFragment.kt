@@ -53,9 +53,7 @@ class BeerListFragment : Fragment() {
         val layoutManager = LinearLayoutManager(activity)
         layoutManager.orientation = LinearLayoutManager.VERTICAL
         binding.recyclerViewBeerList.layoutManager = layoutManager
-
         viewModel.beerList.observe(viewLifecycleOwner) { beers ->
-
             beerListAdapter = BeerListAdapter(beers)
             binding.recyclerViewBeerList.adapter = beerListAdapter.apply {
                 onCallBackClickDetail = { id ->
@@ -65,8 +63,6 @@ class BeerListFragment : Fragment() {
                     )
                 }
             }
-
         }
     }
-
 }

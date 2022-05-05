@@ -62,9 +62,7 @@ class BeerDetailFragment : Fragment() {
     private fun observerBeerDetail() {
         viewModel.beerDetail.observe(viewLifecycleOwner) { beer ->
             (activity as MainActivity).supportActionBar?.title = beer.name
-            binding.abvBeer.text = "${beer.abv}%"
             binding.colorAbvStatus.setData(beer.abv)
-            binding.descriptionBeer.text = beer.description
             Picasso.get().load(beer.image_url).into(binding.imageBeer)
             adapterHops(beer.ingredients.hops)
             adapterMalts(beer.ingredients.malt)
@@ -77,11 +75,13 @@ class BeerDetailFragment : Fragment() {
         layoutManager.orientation = LinearLayoutManager.VERTICAL
         binding.recyclerViewHops.layoutManager = layoutManager
         hopsAdapter = HopsAdapter(hops)
+
         binding.recyclerViewHops.adapter = hopsAdapter.apply {
             onCallBackClickBalance = { tag, position, value, unit ->
                 navigationBalance(value, unit, tag, position)
             }
         }
+
         getNavigationResult(HOPS)?.observe(viewLifecycleOwner) {
             hopsAdapter.updateStatus(true, it)
             hopsAdapter.notifyItemChanged(it)
