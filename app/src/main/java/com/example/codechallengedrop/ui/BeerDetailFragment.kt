@@ -1,6 +1,5 @@
 package com.example.codechallengedrop.ui
 
-import android.R.attr.defaultValue
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,12 +14,12 @@ import com.example.codechallengedrop.data.response.Method
 import com.example.codechallengedrop.databinding.FragmentBeerDetailBinding
 import com.example.codechallengedrop.extension.getNavigationResult
 import com.squareup.picasso.Picasso
-import org.koin.android.viewmodel.ext.android.viewModel
+import org.koin.android.viewmodel.ext.android.sharedViewModel
 
 
 class BeerDetailFragment : Fragment() {
 
-    private val viewModel: BeerViewModel by viewModel()
+    private val viewModel by sharedViewModel<BeerViewModel>()
     private lateinit var binding: FragmentBeerDetailBinding
     private lateinit var hopsAdapter: HopsAdapter
     private lateinit var maltsAdapter: MaltsAdapter
@@ -30,13 +29,14 @@ class BeerDetailFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         (activity as MainActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        val bundle = this.arguments
-        if (bundle != null) {
-            id = bundle.getInt("id_beer", defaultValue)
-            with(viewModel) {
-                id?.let { getBeerDetail(it) }
-            }
+        with(viewModel) {
+            getResponseToBeerDetail(idBeer)
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        viewModel.resetIdBeer()
     }
 
     override fun onCreateView(
@@ -44,17 +44,14 @@ class BeerDetailFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentBeerDetailBinding.inflate(inflater)
-        binding.buttonNetworkAgain.setOnClickListener {
-            id?.let { viewModel.getBeerDetail(it) }
+        binding.layoutError.buttonNetworkAgain.setOnClickListener {
+            id?.let { viewModel.getResponseToBeerDetail(it) }
         }
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        observerLoading()
-        observerError()
-        observerTitleError()
         observerBeerDetail()
     }
 
@@ -124,48 +121,10 @@ class BeerDetailFragment : Fragment() {
         }
     }
 
-    private fun observerLoading() {
-        viewModel.beerDetailLoading.observe(viewLifecycleOwner) { loading ->
-            if (loading) {
-                binding.progressBar.visibility = View.VISIBLE
-                binding.imageError.visibility = View.GONE
-                binding.titleError.visibility = View.GONE
-                binding.buttonNetworkAgain.visibility = View.GONE
-            } else {
-                binding.progressBar.visibility = View.GONE
-            }
-        }
-    }
-
-    private fun observerError() {
-        viewModel.beerDetailError.observe(viewLifecycleOwner) { error ->
-            if (error) {
-                binding.imageError.visibility = View.VISIBLE
-                binding.titleError.visibility = View.VISIBLE
-                binding.buttonNetworkAgain.visibility = View.VISIBLE
-            } else {
-                binding.imageError.visibility = View.GONE
-                binding.titleError.visibility = View.GONE
-                binding.buttonNetworkAgain.visibility = View.GONE
-            }
-        }
-    }
-
-    private fun observerTitleError() {
-        viewModel.beerStringError.observe(this) {
-            binding.titleError.text = getText(it)
-        }
-    }
-
     private fun navigationBalance(value: Double, unit: String, tag: String, position: Int) {
-        val bundle = Bundle()
-        bundle.putDouble("value", value)
-        bundle.putString("unit", unit)
-        bundle.putString("tag", tag)
-        bundle.putInt("position", position)
+        viewModel.setValuesBalance(value, unit, tag, position)
         findNavController().navigate(
-            R.id.action_beerDetailFragment_to_balanceFragment,
-            bundle
+            R.id.action_beerDetailFragment_to_balanceFragment
         )
     }
 

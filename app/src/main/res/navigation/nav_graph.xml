@@ -21,11 +21,6 @@
             app:popUpTo="@id/beerDetailFragment"
             app:popUpToInclusive="false" />
 
-        <argument
-            android:name="idBeer"
-            android:defaultValue="0"
-            app:argType="integer" />
-
     </fragment>
 
     <fragment
@@ -38,11 +33,6 @@
             app:destination="@id/balanceFragment"
             app:enterAnim="@anim/nav_default_enter_anim"
             app:exitAnim="@anim/nav_default_exit_anim" />
-
-        <argument
-            android:name="valueBalance"
-            android:defaultValue="0"
-            app:argType="float" />
 
     </fragment>
 

@@ -42,14 +42,54 @@ class BeerViewModel(
     val beerStringError: LiveData<Int>
         get() = _beerStringError
 
-    fun getBeerList() {
+    private var _idBeer: Int = 0
+    val idBeer: Int
+        get() = _idBeer
+
+    private var _valueBalance: Double = 0.0
+    val valueBalance: Double
+        get() = _valueBalance
+
+    private var _tagModel: String = ""
+    val tagModel: String
+        get() = _tagModel
+
+    private var _unit: String = ""
+    val unit: String
+        get() = _unit
+
+    private var _position: Int = 0
+    val position: Int
+        get() = _position
+
+    fun setValuesBalance(value: Double, unit: String, tag: String, position: Int) {
+        _valueBalance = value
+        _unit = unit
+        _tagModel = tag
+        _position = position
+    }
+
+    fun setIdBeer(value: Int) {
+        _idBeer = value
+    }
+
+    fun resetIdBeer() {
+        _idBeer = 0
+    }
+
+    fun resetValuesBalance() {
+        _valueBalance = 0.0
+        _unit = ""
+        _tagModel = ""
+        _position = 0
+    }
+
+    fun getResponseToBeerList() {
         CoroutineScope(Dispatchers.IO).launch {
             _beerListLoading.postValue(true)
             try {
                 beerRepositoryData.beerList().run {
-                    getTheResultByHttpCode(this.code()) {
-                        _beerList.postValue(this.body())
-                    }
+                    _beerList.postValue(this)
                 }
             } catch (e: Exception) {
                 getError(R.string.unknown_error)
@@ -58,20 +98,16 @@ class BeerViewModel(
         }
     }
 
-    fun getBeerDetail(id: Int) {
-        CoroutineScope(Dispatchers.IO).launch {
-            _beerDetailLoading.postValue(true)
-            try {
-                beerRepositoryData.beerDetail(id).run {
-                    getTheResultByHttpCode(this.code()) {
-                        _beerDetail.postValue(this.body()?.last())
-                    }
-                }
-            } catch (e: Exception) {
-                getError(R.string.unknown_error)
+    fun getResponseToBeerDetail(id: Int) {
+        _beerDetailLoading.postValue(true)
+        try {
+            _beerList.value?.find { it.id == id }?.run {
+                _beerDetail.postValue(this)
             }
-            _beerDetailLoading.postValue(false)
+        } catch (e: Exception) {
+            getError(R.string.unknown_error)
         }
+        _beerDetailLoading.postValue(false)
     }
 
     private fun getError(msgString: Int) {
@@ -80,35 +116,26 @@ class BeerViewModel(
         _beerListLoading.postValue(false)
     }
 
-    private fun getTheResultByHttpCode(code: Int, resultOk: () -> Any) {
-        when (code) {
-            REQUEST_OK -> {
-                resultOk.invoke()
-            }
-            UNAUTHORIZED, FORBIDDEN -> {
-                getError(R.string.UNAUTHORIZED_FORBIDDEN)
-            }
-            NOT_FOUND -> {
-                getError(R.string.NOT_FOUND)
-            }
-            TIMEOUT -> {
-                getError(R.string.TIMEOUT)
-            }
-            INTERNAL_SERVER_ERROR -> {
-                getError(R.string.INTERNAL_SERVER_ERROR)
-            }
+    /**
+     * This function only simulates a data stream to test the balance screen.
+     */
+    fun getSimulationDataStream(lastValue: Int): List<Pair<Int, Int>> {
+        val time = mutableListOf<Pair<Int, Int>>()
+        time.add(Pair(TIMESTAMP_VALUE_KEY, lastValue))
+        val changes = (COUNT_MIN..COUNT_MAX).random()
+        for (i in 0..changes) {
+            val weight = (0..WEIGHT_MAX).random()
+            val timestamp = (0..TIMESTAMP_MAX).random()
+            time.add(Pair(timestamp, weight))
         }
+        return time.toList().reversed()
     }
-
-    // TODO: Make data stream in MVVM, for the time being is Fragment
 
     companion object {
-        const val REQUEST_OK: Int = 200
-        const val UNAUTHORIZED: Int = 401
-        const val FORBIDDEN: Int = 403
-        const val NOT_FOUND: Int = 404
-        const val TIMEOUT: Int = 408
-        const val INTERNAL_SERVER_ERROR: Int = 500
+        const val COUNT_MIN: Int = 2
+        const val COUNT_MAX: Int = 8
+        const val WEIGHT_MAX: Int = 1000
+        const val TIMESTAMP_VALUE_KEY: Int = 4000
+        const val TIMESTAMP_MAX: Int = 6000
     }
-
 }

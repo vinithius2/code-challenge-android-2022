@@ -5,24 +5,23 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.codechallengedrop.R
 import com.example.codechallengedrop.databinding.FragmentBeerListBinding
-import org.koin.android.viewmodel.ext.android.viewModel
+import org.koin.android.viewmodel.ext.android.sharedViewModel
 
 
 class BeerListFragment : Fragment() {
 
-    private val viewModel: BeerViewModel by viewModel()
+    private val viewModel by sharedViewModel<BeerViewModel>()
     private lateinit var binding: FragmentBeerListBinding
     private lateinit var beerListAdapter: BeerListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         with(viewModel) {
-            getBeerList()
+            getResponseToBeerList()
         }
     }
 
@@ -37,17 +36,14 @@ class BeerListFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentBeerListBinding.inflate(inflater)
-        binding.buttonNetworkAgain.setOnClickListener {
-            viewModel.getBeerList()
+        binding.layoutError.buttonNetworkAgain.setOnClickListener {
+            viewModel.getResponseToBeerList()
         }
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        observerLoading()
-        observerError()
-        observerTitleError()
         observerBeerList()
     }
 
@@ -60,47 +56,12 @@ class BeerListFragment : Fragment() {
             beerListAdapter = BeerListAdapter(beers)
             binding.recyclerViewBeerList.adapter = beerListAdapter.apply {
                 onCallBackClickDetail = { id ->
-                    val bundle = Bundle()
-                    bundle.putInt("id_beer", id)
+                    viewModel.setIdBeer(id)
                     findNavController().navigate(
                         R.id.action_beerListFragment_to_beerDetailFragment,
-                        bundle
                     )
                 }
             }
-        }
-    }
-
-    private fun observerLoading() {
-        viewModel.beerListLoading.observe(viewLifecycleOwner) { loading ->
-            if (loading) {
-                binding.progressBar.visibility = View.VISIBLE
-                binding.imageError.visibility = View.GONE
-                binding.titleError.visibility = View.GONE
-                binding.buttonNetworkAgain.visibility = View.GONE
-            } else {
-                binding.progressBar.visibility = View.GONE
-            }
-        }
-    }
-
-    private fun observerError() {
-        viewModel.beerListError.observe(viewLifecycleOwner) { error ->
-            if (error) {
-                binding.imageError.visibility = View.VISIBLE
-                binding.titleError.visibility = View.VISIBLE
-                binding.buttonNetworkAgain.visibility = View.VISIBLE
-            } else {
-                binding.imageError.visibility = View.GONE
-                binding.titleError.visibility = View.GONE
-                binding.buttonNetworkAgain.visibility = View.GONE
-            }
-        }
-    }
-
-    private fun observerTitleError() {
-        viewModel.beerStringError.observe(viewLifecycleOwner) {
-            binding.titleError.text = getText(it)
         }
     }
 }

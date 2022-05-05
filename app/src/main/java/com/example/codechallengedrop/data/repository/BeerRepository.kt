@@ -9,9 +9,6 @@ import retrofit2.http.Query
 interface BeerRepository {
 
     @GET("beers/")
-    suspend fun getBeerList(@Query("page") number: Int): Response<List<Beer>>
-
-    @GET("beers/{id}")
-    suspend fun getBeerDetail(@Path("id") id: Int): Response<List<Beer>>
+    suspend fun getBeerList(@Query("page") number: Int): List<Beer>
 
 }
