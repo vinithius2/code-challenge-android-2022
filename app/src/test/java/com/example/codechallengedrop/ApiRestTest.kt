@@ -1,60 +1,75 @@
 package com.example.codechallengedrop
 
-import android.app.Application
+//import org.mockito.Mockito
+//import org.mockito.MockitoAnnotations
+import androidx.lifecycle.Observer
 import com.example.codechallengedrop.data.repository.BeerRepository
 import com.example.codechallengedrop.data.repository.BeerRepositoryData
 import com.example.codechallengedrop.data.response.Beer
-import com.example.codechallengedrop.extension.capitalize
 import com.example.codechallengedrop.ui.BeerViewModel
-import org.junit.Assert
+import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
-import retrofit2.Response
-import java.util.*
 
 class ApiRestTest {
 
     @Mock
     private lateinit var beer01: Beer
+
     @Mock
     private lateinit var beer02: Beer
+
     @Mock
     private lateinit var beer03: Beer
-    private var beerList: List<Beer> = listOf(beer01, beer02, beer03)
+
+    @Mock
+    private lateinit var beerRepository: BeerRepository
+
+    @Mock
+    private lateinit var beerRepositoryData: com.example.codechallengedrop.data.repository.BeerRepositoryData
+    private lateinit var viewModel: BeerViewModel
+
+    private lateinit var beerList: List<Beer>
+    private lateinit var beerDetail: List<Beer>
 
     @Before
     fun setUp() {
         MockitoAnnotations.initMocks(this)
+        beerList = listOf(beer01, beer02, beer03)
+        beerDetail = listOf(beer01)
     }
 
     @Test
-    fun `when endpoint list is successful`() {
-        MockRepository(beerList)
+    fun `when endpoint list is successful`() = runBlockingTest {
+        beerRepositoryData = BeerRepositoryData(beerRepository)
+        viewModel = BeerViewModel(beerRepositoryData)
+        val mockObserver = Mock(Observer::class.java)
+        viewModel.beerList.observeForever(mockObserver)
+        val dataList = beerRepositoryData.beerList(1)
+        assert(dataList.isNotEmpty())
+    }
 
+    inner class MockBeerRepositoryData() : BeerRepository {
+        override suspend fun getBeerList(number: Int): List<Beer> {
+            return beerList
+        }
 
-
-        val beerViewModel = BeerViewModel(Mockito.mock(BeerRepositoryData::class.java))
-//        beerViewModel.beerList.
-
-        val spy = Mockito.spy(beerViewModel)
-        spy.getBeerList()
-        Mockito.verify(spy).
-//        beerViewModel.beerList.value = beerList
-//        beerViewModel.beerList.
-//        Assert.assertEquals(beerList, "challenge".capitalize())
+        override suspend fun getBeerDetail(id: Int): List<Beer> {
+            return beerDetail
+        }
     }
 
 }
 
-class MockRepository(private val result: List<Beer>) : BeerRepository {
-    override suspend fun getBeerList(number: Int): Response<List<Beer>> {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun getBeerDetail(id: Int): Response<List<Beer>> {
-        TODO("Not yet implemented")
-    }
-}
+//class BeerRepositoryData() : BeerRepository {
+//    override suspend fun getBeerList(number: Int): List<Beer> {
+//        return beerList
+//    }
+//
+//    override suspend fun getBeerDetail(id: Int): List<Beer> {
+//        return beerDetail
+//    }
+//}

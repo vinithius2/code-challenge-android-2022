@@ -1,9 +1,9 @@
 package com.example.codechallengedrop.ui
 
+import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.codechallengedrop.R
 import com.example.codechallengedrop.data.repository.BeerRepositoryData
 import com.example.codechallengedrop.data.response.Beer
 import kotlinx.coroutines.CoroutineScope
@@ -14,6 +14,8 @@ class BeerViewModel(
     private val beerRepositoryData: BeerRepositoryData
 ) : ViewModel() {
 
+    // Response
+
     private val _beerList = MutableLiveData<List<Beer>>()
     val beerList: LiveData<List<Beer>>
         get() = _beerList
@@ -22,25 +24,35 @@ class BeerViewModel(
     val beerDetail: LiveData<Beer>
         get() = _beerDetail
 
-    private val _beerListLoading = MutableLiveData<Boolean>()
-    val beerListLoading: LiveData<Boolean>
-        get() = _beerListLoading
+    // Visibility list
 
-    private val _beerDetailLoading = MutableLiveData<Boolean>()
-    val beerDetailLoading: LiveData<Boolean>
-        get() = _beerDetailLoading
+    private val _beerListContentsVisibility = MutableLiveData<Int>()
+    val beerListContentsVisibility: LiveData<Int>
+        get() = _beerListContentsVisibility
 
-    private val _beerListError = MutableLiveData<Boolean>().apply { postValue(false) }
-    val beerListError: LiveData<Boolean>
-        get() = _beerListError
+    private val _beerListLoadingVisibility = MutableLiveData<Int>()
+    val beerListLoadingVisibility: LiveData<Int>
+        get() = _beerListLoadingVisibility
 
-    private val _beerDetailError = MutableLiveData<Boolean>().apply { postValue(false) }
-    val beerDetailError: LiveData<Boolean>
-        get() = _beerDetailError
+    private val _beerListErrorVisibility = MutableLiveData<Int>().apply { postValue(View.GONE) }
+    val beerListErrorVisibility: LiveData<Int>
+        get() = _beerListErrorVisibility
 
-    private val _beerStringError = MutableLiveData<Int>()
-    val beerStringError: LiveData<Int>
-        get() = _beerStringError
+    // Visibility detail
+
+    private val _beerDetailContentsVisibility = MutableLiveData<Int>()
+    val beerDetailContentsVisibility: LiveData<Int>
+        get() = _beerDetailContentsVisibility
+
+    private val _beerDetailLoadingVisibility = MutableLiveData<Int>()
+    val beerDetailLoadingVisibility: LiveData<Int>
+        get() = _beerDetailLoadingVisibility
+
+    private val _beerDetailErrorVisibility = MutableLiveData<Int>().apply { postValue(View.GONE) }
+    val beerDetailErrorVisibility: LiveData<Int>
+        get() = _beerDetailErrorVisibility
+
+    // Variables for fragments
 
     private var _idBeer: Int = 0
     val idBeer: Int
@@ -86,34 +98,56 @@ class BeerViewModel(
 
     fun getResponseToBeerList() {
         CoroutineScope(Dispatchers.IO).launch {
-            _beerListLoading.postValue(true)
-            try {
+            _beerListLoadingVisibility.postValue(View.VISIBLE)
+            _beerListErrorVisibility.postValue(View.GONE)
+            kotlin.runCatching {
                 beerRepositoryData.beerList().run {
                     _beerList.postValue(this)
                 }
-            } catch (e: Exception) {
-                getError(R.string.unknown_error)
+            }.onSuccess {
+                getHideListError()
+            }.onFailure {
+                getShowListError()
             }
-            _beerListLoading.postValue(false)
         }
     }
 
     fun getResponseToBeerDetail(id: Int) {
-        _beerDetailLoading.postValue(true)
+        _beerDetailLoadingVisibility.postValue(View.VISIBLE)
+        _beerDetailErrorVisibility.postValue(View.GONE)
         try {
             _beerList.value?.find { it.id == id }?.run {
                 _beerDetail.postValue(this)
             }
+            getHideDetailError()
         } catch (e: Exception) {
-            getError(R.string.unknown_error)
+            getShowDetailError()
         }
-        _beerDetailLoading.postValue(false)
+        _beerDetailLoadingVisibility.postValue(View.GONE)
     }
 
-    private fun getError(msgString: Int) {
-        _beerStringError.postValue(msgString)
-        _beerListError.postValue(true)
-        _beerListLoading.postValue(false)
+    private fun getShowListError() {
+        _beerListErrorVisibility.postValue(View.VISIBLE)
+        _beerListLoadingVisibility.postValue(View.GONE)
+        _beerListContentsVisibility.postValue(View.GONE)
+    }
+
+    private fun getHideListError() {
+        _beerListErrorVisibility.postValue(View.GONE)
+        _beerListLoadingVisibility.postValue(View.GONE)
+        _beerListContentsVisibility.postValue(View.VISIBLE)
+    }
+
+    private fun getShowDetailError() {
+        _beerDetailErrorVisibility.postValue(View.VISIBLE)
+        _beerDetailLoadingVisibility.postValue(View.GONE)
+        _beerDetailContentsVisibility.postValue(View.GONE)
+    }
+
+    private fun getHideDetailError() {
+        _beerDetailErrorVisibility.postValue(View.GONE)
+        _beerDetailLoadingVisibility.postValue(View.GONE)
+        _beerDetailContentsVisibility.postValue(View.VISIBLE)
     }
 
     /**

@@ -36,6 +36,8 @@ class BeerListFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentBeerListBinding.inflate(inflater)
+        binding.viewmodel = viewModel
+        binding.lifecycleOwner = this
         binding.layoutError.buttonNetworkAgain.setOnClickListener {
             viewModel.getResponseToBeerList()
         }
@@ -51,8 +53,9 @@ class BeerListFragment : Fragment() {
         val layoutManager = LinearLayoutManager(activity)
         layoutManager.orientation = LinearLayoutManager.VERTICAL
         binding.recyclerViewBeerList.layoutManager = layoutManager
+
         viewModel.beerList.observe(viewLifecycleOwner) { beers ->
-            binding.recyclerViewBeerList.visibility = View.VISIBLE
+
             beerListAdapter = BeerListAdapter(beers)
             binding.recyclerViewBeerList.adapter = beerListAdapter.apply {
                 onCallBackClickDetail = { id ->
@@ -62,6 +65,8 @@ class BeerListFragment : Fragment() {
                     )
                 }
             }
+
         }
     }
+
 }

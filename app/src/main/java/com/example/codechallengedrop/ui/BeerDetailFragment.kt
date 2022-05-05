@@ -21,10 +21,10 @@ class BeerDetailFragment : Fragment() {
 
     private val viewModel by sharedViewModel<BeerViewModel>()
     private lateinit var binding: FragmentBeerDetailBinding
+
     private lateinit var hopsAdapter: HopsAdapter
     private lateinit var maltsAdapter: MaltsAdapter
     private lateinit var methodsAdapter: MethodsAdapter
-    private var id: Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,20 +34,24 @@ class BeerDetailFragment : Fragment() {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        viewModel.resetIdBeer()
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentBeerDetailBinding.inflate(inflater)
+        binding.viewmodel = viewModel
+        binding.lifecycleOwner = this
         binding.layoutError.buttonNetworkAgain.setOnClickListener {
-            id?.let { viewModel.getResponseToBeerDetail(it) }
+            with(viewModel) {
+                getResponseToBeerDetail(idBeer)
+            }
         }
         return binding.root
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        viewModel.resetIdBeer()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -57,7 +61,6 @@ class BeerDetailFragment : Fragment() {
 
     private fun observerBeerDetail() {
         viewModel.beerDetail.observe(viewLifecycleOwner) { beer ->
-            visibileCards()
             (activity as MainActivity).supportActionBar?.title = beer.name
             binding.abvBeer.text = "${beer.abv}%"
             binding.colorAbvStatus.setData(beer.abv)
@@ -67,10 +70,6 @@ class BeerDetailFragment : Fragment() {
             adapterMalts(beer.ingredients.malt)
             adapterMethods(beer.method)
         }
-    }
-
-    private fun visibileCards() {
-        binding.scrollDetailBeer.visibility = View.VISIBLE
     }
 
     private fun adapterHops(hops: List<Hops>) {
