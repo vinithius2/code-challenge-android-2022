@@ -9,7 +9,8 @@ import com.example.codechallengedrop.data.response.DefaultValueUnit
 import com.example.codechallengedrop.databinding.IngredientsViewholderBinding
 
 class GeneralAdapter(
-    private val dataSet: List<Pair<String, DefaultValueUnit>>
+    private val dataSet: List<Pair<String, DefaultValueUnit>>,
+    private val tag: String
 ) : RecyclerView.Adapter<GeneralAdapter.MethodViewHolder>() {
 
     private lateinit var view: View
@@ -41,7 +42,7 @@ class GeneralAdapter(
             binding.ingredient.text = method
             binding.buttonBalance.setOnClickListener {
                 onCallBackClickBalance?.invoke(
-                    BeerDetailFragment.METHOD,
+                    tag,
                     position,
                     valueUnit.value,
                     valueUnit.unit

@@ -61,17 +61,17 @@ class BeerDetailFragment : Fragment() {
             Picasso.get().load(beer.image_url).into(binding.imageBeer)
             with(binding) {
                 adapterGeneral(
-                    GeneralAdapter(beer.ingredients.hops.getNewFormat()),
+                    GeneralAdapter(beer.ingredients.hops.getNewFormat(), HOPS),
                     recyclerViewHops,
                     HOPS
                 )
                 adapterGeneral(
-                    GeneralAdapter(beer.ingredients.malt.getNewFormat()),
+                    GeneralAdapter(beer.ingredients.malt.getNewFormat(), MALTS),
                     recyclerViewMalts,
                     MALTS
                 )
                 adapterGeneral(
-                    GeneralAdapter(beer.method.getNewFormat()),
+                    GeneralAdapter(beer.method.getNewFormat(), METHOD),
                     recyclerViewMethod,
                     METHOD
                 )
