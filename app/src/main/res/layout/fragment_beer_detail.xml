@@ -3,65 +3,49 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="viewmodel"
+            type="com.example.codechallengedrop.ui.BeerViewModel" />
+    </data>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/background_app">
 
         <ProgressBar
-            android:id="@+id/progressBar"
+            android:id="@+id/progress_bar"
             style="?android:attr/progressBarStyleLarge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:visibility="@{viewmodel.beerDetailLoadingVisibility}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:visibility="gone" />
 
-        <ImageView
-            android:id="@+id/image_error"
-            android:layout_width="120dp"
-            android:layout_height="120dp"
-            android:layout_margin="6dp"
-            android:contentDescription="@string/error"
-            android:src="@drawable/disconnecticon"
-            android:visibility="gone"
+        <include
+            android:id="@+id/layout_error"
+            layout="@layout/layout_error"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="@{viewmodel.beerDetailErrorVisibility}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <Button
-            android:id="@+id/button_network_again"
-            style="@android:style/Widget.Material.Light.ButtonBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="50dp"
-            android:text="@string/again"
-            android:visibility="gone"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/image_error" />
-
-        <TextView
-            android:id="@+id/title_error"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="2dp"
-            android:layout_marginTop="5dp"
-            android:text="@string/abv"
-            android:textSize="16sp"
-            android:visibility="gone"
-            app:layout_constraintLeft_toLeftOf="@+id/image_error"
-            app:layout_constraintRight_toRightOf="@+id/image_error"
-            app:layout_constraintTop_toBottomOf="@+id/image_error" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="gone" />
 
         <ScrollView
             android:id="@+id/scroll_detail_beer"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="gone"
+            android:visibility="@{viewmodel.beerDetailContentsVisibility}"
             tools:visibility="visible">
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -121,6 +105,7 @@
                             android:layout_marginHorizontal="3dp"
                             android:layout_marginTop="5dp"
                             android:textSize="16sp"
+                            android:text="@{Double.toString(viewmodel.beerDetail.abv)}"
                             app:layout_constraintLeft_toRightOf="@+id/abv_beer_title"
                             app:layout_constraintTop_toBottomOf="@+id/image_beer"
                             tools:text="0.0%" />
@@ -133,6 +118,7 @@
                             android:layout_marginTop="20dp"
                             android:paddingHorizontal="12dp"
                             android:textSize="16sp"
+                            android:text="@{viewmodel.beerDetail.description}"
                             app:layout_constraintLeft_toLeftOf="parent"
                             app:layout_constraintRight_toRightOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/abv_beer"

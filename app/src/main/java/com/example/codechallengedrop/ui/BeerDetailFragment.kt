@@ -1,6 +1,5 @@
 package com.example.codechallengedrop.ui
 
-import android.R.attr.defaultValue
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,34 +7,26 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.codechallengedrop.R
-import com.example.codechallengedrop.data.response.Hops
-import com.example.codechallengedrop.data.response.Malt
-import com.example.codechallengedrop.data.response.Method
+import com.example.codechallengedrop.data.response.Beer
 import com.example.codechallengedrop.databinding.FragmentBeerDetailBinding
 import com.example.codechallengedrop.extension.getNavigationResult
+import com.example.codechallengedrop.extension.getNewFormat
 import com.squareup.picasso.Picasso
-import org.koin.android.viewmodel.ext.android.viewModel
+import org.koin.android.viewmodel.ext.android.sharedViewModel
 
 
 class BeerDetailFragment : Fragment() {
 
-    private val viewModel: BeerViewModel by viewModel()
+    private val viewModel by sharedViewModel<BeerViewModel>()
     private lateinit var binding: FragmentBeerDetailBinding
-    private lateinit var hopsAdapter: HopsAdapter
-    private lateinit var maltsAdapter: MaltsAdapter
-    private lateinit var methodsAdapter: MethodsAdapter
-    private var id: Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         (activity as MainActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        val bundle = this.arguments
-        if (bundle != null) {
-            id = bundle.getInt("id_beer", defaultValue)
-            with(viewModel) {
-                id?.let { getBeerDetail(it) }
-            }
+        with(viewModel) {
+            getResponseToBeerDetail(idBeer)
         }
     }
 
@@ -44,128 +35,87 @@ class BeerDetailFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentBeerDetailBinding.inflate(inflater)
-        binding.buttonNetworkAgain.setOnClickListener {
-            id?.let { viewModel.getBeerDetail(it) }
+        binding.viewmodel = viewModel
+        binding.lifecycleOwner = this
+        binding.layoutError.buttonNetworkAgain.setOnClickListener {
+            with(viewModel) {
+                getResponseToBeerDetail(idBeer)
+            }
         }
         return binding.root
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        viewModel.resetIdBeer()
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        observerLoading()
-        observerError()
-        observerTitleError()
         observerBeerDetail()
     }
 
     private fun observerBeerDetail() {
         viewModel.beerDetail.observe(viewLifecycleOwner) { beer ->
-            visibileCards()
             (activity as MainActivity).supportActionBar?.title = beer.name
-            binding.abvBeer.text = "${beer.abv}%"
             binding.colorAbvStatus.setData(beer.abv)
-            binding.descriptionBeer.text = beer.description
             Picasso.get().load(beer.image_url).into(binding.imageBeer)
-            adapterHops(beer.ingredients.hops)
-            adapterMalts(beer.ingredients.malt)
-            adapterMethods(beer.method)
+            setEachAdapters(beer)
         }
     }
 
-    private fun visibileCards() {
-        binding.scrollDetailBeer.visibility = View.VISIBLE
+    /**
+     * Set HOPS, MALTS and METHOD in each ingredient adapter.
+     */
+    private fun setEachAdapters(beer: Beer) {
+        with(binding) {
+            setIngredientAdapter(
+                IngredientsAdapter(beer.ingredients.hops.getNewFormat(), HOPS),
+                recyclerViewHops,
+                HOPS
+            )
+            setIngredientAdapter(
+                IngredientsAdapter(beer.ingredients.malt.getNewFormat(), MALTS),
+                recyclerViewMalts,
+                MALTS
+            )
+            setIngredientAdapter(
+                IngredientsAdapter(beer.method.getNewFormat(), METHOD),
+                recyclerViewMethod,
+                METHOD
+            )
+        }
     }
 
-    private fun adapterHops(hops: List<Hops>) {
+    /**
+     * Set ingredient adapter.
+     */
+    private fun setIngredientAdapter(
+        adapter: IngredientsAdapter,
+        recyclerView: RecyclerView,
+        tag: String
+    ) {
         val layoutManager = LinearLayoutManager(activity)
         layoutManager.orientation = LinearLayoutManager.VERTICAL
-        binding.recyclerViewHops.layoutManager = layoutManager
-        hopsAdapter = HopsAdapter(hops)
-        binding.recyclerViewHops.adapter = hopsAdapter.apply {
+        recyclerView.layoutManager = layoutManager
+        recyclerView.adapter = adapter.apply {
             onCallBackClickBalance = { tag, position, value, unit ->
                 navigationBalance(value, unit, tag, position)
             }
         }
-        getNavigationResult(HOPS)?.observe(viewLifecycleOwner) {
-            hopsAdapter.updateStatus(true, it)
-            hopsAdapter.notifyItemChanged(it)
+        getNavigationResult(tag)?.observe(viewLifecycleOwner) {
+            adapter.updateStatus(true, it)
+            adapter.notifyItemChanged(it)
         }
     }
 
-    private fun adapterMalts(malts: List<Malt>) {
-        val layoutManager = LinearLayoutManager(activity)
-        layoutManager.orientation = LinearLayoutManager.VERTICAL
-        binding.recyclerViewMalts.layoutManager = layoutManager
-        maltsAdapter = MaltsAdapter(malts)
-        binding.recyclerViewMalts.adapter = maltsAdapter.apply {
-            onCallBackClickBalance = { tag, position, value, unit ->
-                navigationBalance(value, unit, tag, position)
-            }
-        }
-        getNavigationResult(MALTS)?.observe(viewLifecycleOwner) {
-            maltsAdapter.updateStatus(true, it)
-            maltsAdapter.notifyItemChanged(it)
-        }
-    }
-
-    private fun adapterMethods(methods: Method) {
-        val layoutManager = LinearLayoutManager(activity)
-        layoutManager.orientation = LinearLayoutManager.VERTICAL
-        binding.recyclerViewMethod.layoutManager = layoutManager
-        methodsAdapter = MethodsAdapter(methods.getNewFormat())
-        binding.recyclerViewMethod.adapter = methodsAdapter.apply {
-            onCallBackClickBalance = { tag, position, value, unit ->
-                navigationBalance(value, unit, tag, position)
-            }
-        }
-        getNavigationResult(METHOD)?.observe(viewLifecycleOwner) {
-            methodsAdapter.updateStatus(true, it)
-            methodsAdapter.notifyItemChanged(it)
-        }
-    }
-
-    private fun observerLoading() {
-        viewModel.beerDetailLoading.observe(viewLifecycleOwner) { loading ->
-            if (loading) {
-                binding.progressBar.visibility = View.VISIBLE
-                binding.imageError.visibility = View.GONE
-                binding.titleError.visibility = View.GONE
-                binding.buttonNetworkAgain.visibility = View.GONE
-            } else {
-                binding.progressBar.visibility = View.GONE
-            }
-        }
-    }
-
-    private fun observerError() {
-        viewModel.beerDetailError.observe(viewLifecycleOwner) { error ->
-            if (error) {
-                binding.imageError.visibility = View.VISIBLE
-                binding.titleError.visibility = View.VISIBLE
-                binding.buttonNetworkAgain.visibility = View.VISIBLE
-            } else {
-                binding.imageError.visibility = View.GONE
-                binding.titleError.visibility = View.GONE
-                binding.buttonNetworkAgain.visibility = View.GONE
-            }
-        }
-    }
-
-    private fun observerTitleError() {
-        viewModel.beerStringError.observe(this) {
-            binding.titleError.text = getText(it)
-        }
-    }
-
+    /**
+     * Set values in viewModel for use when navigation to fragmentBalance.
+     */
     private fun navigationBalance(value: Double, unit: String, tag: String, position: Int) {
-        val bundle = Bundle()
-        bundle.putDouble("value", value)
-        bundle.putString("unit", unit)
-        bundle.putString("tag", tag)
-        bundle.putInt("position", position)
+        viewModel.setValuesBalance(value, unit, tag, position)
         findNavController().navigate(
-            R.id.action_beerDetailFragment_to_balanceFragment,
-            bundle
+            R.id.action_beerDetailFragment_to_balanceFragment
         )
     }
 

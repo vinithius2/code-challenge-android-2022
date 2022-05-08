@@ -53,6 +53,9 @@ class ProgressComponent(
         strokeCap = Paint.Cap.SQUARE
     }
 
+    /**
+     * The onDraw() method creates a Canvas for creating the balance drawing.
+     */
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
         setSpace()
@@ -64,26 +67,44 @@ class ProgressComponent(
         }
     }
 
+    /**
+     * Draw white arc in background.
+     */
     private fun drawBackgroundArc(canvas: Canvas) {
         canvas.drawArc(ovalSpace, START, END, false, parentArcPaint)
     }
 
+    /**
+     * Draw magenta arc with END accordingly the percent.
+     */
     private fun drawInnerArc(canvas: Canvas) {
         val percentageToFill = getCurrentPercentageToFill()
         canvas.drawArc(ovalSpace, START, percentageToFill, false, fillArcPaint)
     }
 
+    /**
+     * Draw a small Ball at arc positioned in the point expected.
+     */
     private fun drawBall(canvas: Canvas) {
         val value = getFinishPercentageToFill(timeBalance.last().second)
         canvas.drawArc(ovalSpace, value + START, 1f, false, finishPaintPoint)
     }
 
+    /**
+     * Get current percent to fill based on the variable 'currentPercentage'.
+     */
     private fun getCurrentPercentageToFill() =
         (ARC_FULL_ROTATION_DEGREE * (currentPercentage / PERCENTAGE_DIVIDER)).toFloat()
 
+    /**
+     * Get the percentage for the final mate reference on the arc.
+     */
     private fun getFinishPercentageToFill(value: Int) =
         ((value * PERCENTAGE_DIVIDER) / ARC_FULL_ROTATION_DEGREE).toFloat()
 
+    /**
+     * Create a invisible space for draw.
+     */
     private fun setSpace() {
         val horizontalCenter = (width.div(2)).toFloat()
         val verticalCenter = (height.div(2)).toFloat()
@@ -96,17 +117,17 @@ class ProgressComponent(
         )
     }
 
-    fun animateProgress(index: Int = 0, lastValue: Float = 0f) {
-        if (index == 0) {
-            fillArcPaint.color = fillArcColor
-            canvasAux?.let { drawInnerArc(it) }
-        }
+    /**
+     * Function to generate balance arc animation.
+     */
+    fun animateProgress(index: Int = 0, initialValue: Float = 0f) {
+        restartColorToMagenta(index)
+        val finalValue = timeBalance[index].second.valueToPercente()
         val valuesHolder = PropertyValuesHolder.ofFloat(
             PERCENTAGE_VALUE_HOLDER,
-            lastValue,
-            timeBalance[index].second.valueToPercente()
+            initialValue,
+            finalValue
         )
-        val newLastValue = timeBalance[index].second.valueToPercente()
         val animator = ValueAnimator().apply {
             setValues(valuesHolder)
             duration = timeBalance[index].first.toLong()
@@ -119,17 +140,37 @@ class ProgressComponent(
             }
             doOnEnd {
                 if (timeBalance.lastIndex != index) {
-                    animateProgress(index.plus(1), newLastValue)
+                    animateProgress(index.plus(1), finalValue)
                 } else {
-                    fillArcPaint.color = finishArcColor
-                    canvasAux?.let { drawInnerArc(it) }
-                    onCallBackFinish?.invoke()
+                    whenFinishAnimation()
                 }
             }
         }
         animator.start()
     }
 
+    /**
+     * When finish animation change arc's color to GREEN and call 'onCallBackFinish'.
+     */
+    private fun whenFinishAnimation() {
+        fillArcPaint.color = finishArcColor
+        canvasAux?.let { drawInnerArc(it) }
+        onCallBackFinish?.invoke()
+    }
+
+    /**
+     * Reset color to MAGENTA if index is zero.
+     */
+    private fun restartColorToMagenta(index: Int) {
+        if (index == 0) {
+            fillArcPaint.color = fillArcColor
+            canvasAux?.let { drawInnerArc(it) }
+        }
+    }
+
+    /**
+     * Set data for balance animation.
+     */
     fun saveDataStream(dataStream: List<Pair<Int, Int>>) {
         timeBalance = dataStream
     }

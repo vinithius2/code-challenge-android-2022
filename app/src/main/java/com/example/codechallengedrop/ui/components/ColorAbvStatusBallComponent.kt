@@ -49,17 +49,27 @@ class ColorAbvStatusBallComponent(context: Context, attrs: AttributeSet?) :
         }
     }
 
+    /**
+     * Set Color hexadecimal in Drawable about ABC level.
+     */
     private fun setChangeColor(color: String) {
         val shape = binding.imageBeer.drawable as GradientDrawable
         shape.setColor(Color.parseColor(color))
     }
 
+    /**
+     * Set data in ABV variable.
+     */
     fun setData(
         abv_input: Double
     ) {
         ABV = abv_input
     }
 
+    /**
+     * This is an ABV level stat, it starts from zero alcohol to the highest level considered,
+     * however this may vary by country.
+     */
     companion object {
         const val ZERO: Double = 0.0
         const val VERY_LOW: Double = 0.5
