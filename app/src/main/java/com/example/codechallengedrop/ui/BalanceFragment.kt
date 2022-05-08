@@ -16,20 +16,6 @@ class BalanceFragment : Fragment() {
 
     private val viewModel by sharedViewModel<BeerViewModel>()
     private lateinit var binding: FragmentBalanceBinding
-    private var mTagModel: String = ""
-    private var mUnit: String = ""
-    private var mPosition: Int = 0
-    private var mValue: Double = 0.0
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        with(viewModel) {
-            mTagModel = tagModel
-            mUnit = unit
-            mPosition = position
-            mValue = valueBalance
-        }
-    }
 
     override fun onDestroy() {
         super.onDestroy()
@@ -47,8 +33,8 @@ class BalanceFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
-            textValueBalance.text = "$mValue ${mUnit.capitalize()}"
-            progress.saveDataStream(viewModel.getSimulationDataStream(mValue.toInt()))
+            textValueBalance.text = "${viewModel.valueBalance} ${viewModel.unit.capitalize()}"
+            progress.saveDataStream(viewModel.getSimulationDataStream())
             progress.apply {
                 onCallBackValue = {
                     textValueRealtime.text = it.toString()
@@ -69,8 +55,8 @@ class BalanceFragment : Fragment() {
             }
             buttonDone.setOnClickListener {
                 findNavController().previousBackStackEntry?.savedStateHandle?.set(
-                    mTagModel,
-                    mPosition
+                    viewModel.tagModel,
+                    viewModel.position
                 )
                 requireActivity().onBackPressed()
             }

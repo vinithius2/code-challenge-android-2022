@@ -8,10 +8,10 @@ import com.example.codechallengedrop.R
 import com.example.codechallengedrop.data.response.DefaultValueUnit
 import com.example.codechallengedrop.databinding.IngredientsViewholderBinding
 
-class GeneralAdapter(
+class IngredientsAdapter(
     private val dataSet: List<Pair<String, DefaultValueUnit>>,
     private val tag: String
-) : RecyclerView.Adapter<GeneralAdapter.MethodViewHolder>() {
+) : RecyclerView.Adapter<IngredientsAdapter.MethodViewHolder>() {
 
     private lateinit var view: View
     var onCallBackClickBalance: ((tag: String, position: Int, value: Double, unit: String) -> Unit)? =
@@ -30,8 +30,11 @@ class GeneralAdapter(
 
     override fun getItemCount() = dataSet.size
 
+    /**
+     * Update status of done to True or False for displaying text on the button.
+     */
     fun updateStatus(status: Boolean, position: Int) {
-        dataSet[position].second.status = status
+        dataSet[position].second.done = status
     }
 
     inner class MethodViewHolder(
@@ -48,7 +51,7 @@ class GeneralAdapter(
                     valueUnit.unit
                 )
             }
-            if (valueUnit.status) {
+            if (valueUnit.done) {
                 binding.buttonBalance.text = view.context.getText(R.string.done)
             }
         }

@@ -9,6 +9,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.codechallengedrop.R
+import com.example.codechallengedrop.data.response.Beer
 import com.example.codechallengedrop.databinding.FragmentBeerDetailBinding
 import com.example.codechallengedrop.extension.getNavigationResult
 import com.example.codechallengedrop.extension.getNewFormat
@@ -59,27 +60,41 @@ class BeerDetailFragment : Fragment() {
             (activity as MainActivity).supportActionBar?.title = beer.name
             binding.colorAbvStatus.setData(beer.abv)
             Picasso.get().load(beer.image_url).into(binding.imageBeer)
-            with(binding) {
-                adapterGeneral(
-                    GeneralAdapter(beer.ingredients.hops.getNewFormat(), HOPS),
-                    recyclerViewHops,
-                    HOPS
-                )
-                adapterGeneral(
-                    GeneralAdapter(beer.ingredients.malt.getNewFormat(), MALTS),
-                    recyclerViewMalts,
-                    MALTS
-                )
-                adapterGeneral(
-                    GeneralAdapter(beer.method.getNewFormat(), METHOD),
-                    recyclerViewMethod,
-                    METHOD
-                )
-            }
+            setEachAdapters(beer)
         }
     }
 
-    private fun adapterGeneral(adapter: GeneralAdapter, recyclerView: RecyclerView, tag: String) {
+    /**
+     * Set HOPS, MALTS and METHOD in each ingredient adapter.
+     */
+    private fun setEachAdapters(beer: Beer) {
+        with(binding) {
+            setIngredientAdapter(
+                IngredientsAdapter(beer.ingredients.hops.getNewFormat(), HOPS),
+                recyclerViewHops,
+                HOPS
+            )
+            setIngredientAdapter(
+                IngredientsAdapter(beer.ingredients.malt.getNewFormat(), MALTS),
+                recyclerViewMalts,
+                MALTS
+            )
+            setIngredientAdapter(
+                IngredientsAdapter(beer.method.getNewFormat(), METHOD),
+                recyclerViewMethod,
+                METHOD
+            )
+        }
+    }
+
+    /**
+     * Set ingredient adapter.
+     */
+    private fun setIngredientAdapter(
+        adapter: IngredientsAdapter,
+        recyclerView: RecyclerView,
+        tag: String
+    ) {
         val layoutManager = LinearLayoutManager(activity)
         layoutManager.orientation = LinearLayoutManager.VERTICAL
         recyclerView.layoutManager = layoutManager
@@ -94,6 +109,9 @@ class BeerDetailFragment : Fragment() {
         }
     }
 
+    /**
+     * Set values in viewModel for use when navigation to fragmentBalance.
+     */
     private fun navigationBalance(value: Double, unit: String, tag: String, position: Int) {
         viewModel.setValuesBalance(value, unit, tag, position)
         findNavController().navigate(

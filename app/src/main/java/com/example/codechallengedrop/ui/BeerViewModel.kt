@@ -153,9 +153,9 @@ class BeerViewModel(
     /**
      * This function only simulates a data stream to test the balance screen.
      */
-    fun getSimulationDataStream(lastValue: Int): List<Pair<Int, Int>> {
+    fun getSimulationDataStream(): List<Pair<Int, Int>> {
         val time = mutableListOf<Pair<Int, Int>>()
-        time.add(Pair(TIMESTAMP_VALUE_KEY, lastValue))
+        time.add(Pair(TIMESTAMP_VALUE_KEY, _valueBalance.toInt()))
         val changes = (COUNT_MIN..COUNT_MAX).random()
         for (i in 0..changes) {
             val weight = (0..WEIGHT_MAX).random()

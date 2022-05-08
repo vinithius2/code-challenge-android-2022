@@ -12,6 +12,11 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
     }
 
+    /**
+     * This method is called whenever the user chooses to navigate Up within your application's
+     * activity hierarchy from the action bar. But, in this situation, is validet if have a
+     * navigation up in nav_host_fragment, if not, use super.onSupportNavigateUp()
+     */
     override fun onSupportNavigateUp(): Boolean {
         return Navigation.findNavController(this, R.id.nav_host_fragment).navigateUp()
                 || super.onSupportNavigateUp()
